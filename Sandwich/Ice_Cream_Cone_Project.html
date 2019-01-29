@@ -1,0 +1,88 @@
+<html>
+    <body>
+        <table cellspacing="0" cellpadding="1">
+            
+        </table>
+    </body>
+</html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    
+   var background = [255, 0, 0]
+   var r = 2;
+   var incr = 0.025;
+   for (var j = -r; j < r; j += incr)
+   {
+       var tableRow = "<tr>";
+       for (var i = -r; i < r; i += incr)
+       {
+           var sphere_hit = sphere(i, -j);
+           var cone_hit = cone(i, -j);
+           var color = background;
+           if (false) {}   
+
+           else if (cone_hit.z < sphere_hit.z)
+           {
+               color = cone_hit.color;
+           }
+           else if (sphere_hit.z < Infinity)
+           {
+               color = sphere_hit.color;
+           }
+           
+           
+           
+           tableRow = tableRow + '<td style = "background:rgb('+color[0] + ',' + color[1] + ',' + color[2] + ')"></td>';
+       }
+       tableRow = tableRow + "</tr>";
+       jQuery('table').append(tableRow);
+   }
+   
+   function sphere(x, y)
+   {
+       var light = normalize([10, 10, -10]); // generates a 3d unit vector using any 3 coordinates that are not zero since Vector O returns a point
+       var discriminant = 1 - x * x - y * y;// lets you check the value before you take the square root to see if the point is on the sphere or not
+       if (discriminant < 0)
+       {
+           return {"z": Infinity};
+       }
+       var z = -Math.sqrt(discriminant); // distance along the z axis until point of intersection
+       var n = [x, y, z];
+       var brightness = dotProduct(n, light);
+       return {"z": z, "color": [parseInt(brightness * 255), parseInt(brightness * 255), parseInt(brightness * 255)]};
+   }
+   
+   function cone(x, y)
+   {
+       var light = normalize([10, 10, -10]); // generates a 3d unit vector using any 3 coordinates that are not zero since Vector O returns a point
+       var discriminant = y * y - x * x;// lets you check the value before you take the square root to see if the point is on the sphere or not
+       if (discriminant < 0)
+       {
+           return {"z": Infinity};
+       }
+       var z = -Math.sqrt(discriminant);
+       var v = Math.sqrt(2 * (x * x + z * z)); // vector
+       var n = [x / v, 1 / Math.sqrt(2), z / v];
+       var brightness = dotProduct(n, light);
+       return {"z": z, "color": [parseInt(brightness * 255), parseInt(brightness * 255), parseInt(brightness * 255)]};
+   }
+   
+   function normalize(v) // creates a unit 3d vector
+   {
+       var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+       return [v[0] / length, v[1] / length, v[2] / length];     
+   }
+   
+   function dotProduct(u, v)
+   {
+       return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+   }
+   
+   function isColor(a, b)
+   {
+       return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+   }
+   
+</script>

@@ -1,0 +1,43 @@
+<html>
+    <body>
+        <table cellspacing="0" cellpadding="1">
+            
+        </table>
+    </body>
+</html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+   var r = 0.5;
+   var incr = 0.005;
+   for (var j = -r; j < r; j += incr)
+   {
+       var tableRow = "<tr>";
+       for (var i = -r; i < r; i += incr)
+       {
+           var color = mandelbrot(i,j);
+           tableRow = tableRow + '<td style = "background:rgb('+color[0] + ',' + color[1] + ',' + color[2] + ')"></td>';
+       }
+       tableRow = tableRow + "</tr>";
+       jQuery('table').append(tableRow);
+   }
+   
+   function mandelbrot(cr, ci) // cr is real ci is imaginary
+   {
+       var zn = [0,0];
+       for (var n = 1; n <= 100; n ++)
+       {
+           //console.log(zn);
+           var r = zn[0] * zn[0] - zn[1] * zn[1] + cr;
+           var i = 2 * zn[0] * zn[1] + ci;
+           zn = [r, i];
+           if (zn[0] * zn[0] + zn[1] * zn[1] > 4)
+           {
+                return [255,0,0];
+           }
+       }
+       return [0,0,255];
+       
+   }
+</script>

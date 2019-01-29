@@ -1,0 +1,49 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+<script>
+    function mxm(a, b)
+    {
+        var matrix = [];
+        for (var j = 0; j < 4; j++) // this picks the row which is an array
+        {
+            matrix[j] = []; // This creates the next row without any individual elements
+            for (var i = 0; i < 4; i++) // sets an element from that row
+            {
+                matrix[j][i] = 0; // This refers to the row and empty array created on line 9 and
+                for (var k = 0; k < 4; k++)
+                {
+                    matrix[j][i] += a[j][k] * b[k][i];
+                }
+            }
+        }
+        return matrix;
+
+    }
+    
+    function mPrint(a)
+    {
+        for (var j = 0; j < 4; j++)
+        {
+            console.log(a[j][0], a[j][1], a[j][2], a[j][3]);
+        }
+    }
+    
+    var a = [
+            [0, 1, 2, 3], 
+            [0, 1, 2, 3], 
+            [0, 1, 2, 3], 
+            [0, 1, 2, 3], 
+        ];
+    var b = [
+            [0, 1, 2, 3], 
+            [0, 1, 2, 3], 
+            [0, 1, 2, 3], 
+            [0, 1, 2, 3], 
+        ];
+    var m = mxm(a, b);
+    mPrint(m);    
+    
+    
+    
+    
+</script>

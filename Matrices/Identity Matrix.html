@@ -1,0 +1,21 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+<script>
+    function identityMatrix()
+    {
+        var matrix = [];
+        
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i = 0; i < 4; i ++)
+            {
+                matrix[j][i] = 0;
+                if (i == j) matrix[j][i] = 1;
+            }
+        }
+        return matrix;
+    }
+
+    console.log(identityMatrix());
+</script>

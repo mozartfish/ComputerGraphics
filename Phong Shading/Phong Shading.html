@@ -1,0 +1,195 @@
+<html>
+<head>
+<title>Raytracing Coffee</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+    * {
+        font-size: 5pt;
+        white-space:nowrap;
+    }
+</style>
+</head>
+
+<body>
+    <table cellspacing="0" cellpadding="1"></table>
+</body>
+
+<script type="text/coffeescript">
+
+len = (u) ->
+    Math.sqrt(dot(u, u))
+
+dot = (u, v) ->
+    v[0] * u[0] + v[1] * u[1] + v[2] * u[2]
+
+sub = (u, v) ->
+    [u[0] - v[0], u[1] - v[1], u[2] - v[2]]
+
+add = (u, v) ->
+    [v[0] + u[0], v[1] + u[1], v[2] + u[2]]
+
+mul = (s, v) ->
+    [s * v[0], s * v[1], s * v[2]]
+
+    
+
+normalize = (v) ->
+    length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+    [v[0] / length, v[1] / length, v[2] / length]
+
+
+scale = (s, v) ->
+    [s * v[0], s * v[1], s * v[2]]
+
+hitSphere = false
+
+class Shape 
+    constructor: ->
+        @dcolor = [0, 1, 0]
+        @pexp = 0
+        @refl = 0
+    color: (@dcolor) ->
+        this
+    phong: (@pcolor, @pexp) ->
+        this
+    reflect: (@refl) ->
+        this
+    name: (@name) ->
+        this
+      
+class Sphere extends Shape
+    constructor: (@center, @radius) -> 
+        super
+        this
+    intersect: (g, d) ->
+        # g is the ray origin 
+        # d is the ray direction
+        # c is the direction from the ray origin to the center of the Sphere
+        # s is a constant of some sorts
+        c = sub(@center, g)
+        s = dot(c, d)
+        discr = (@radius * @radius) - dot(c, c) + s*s
+        console.log("sphere", g, d, c, s, discr) if debug
+        if discr < 0 
+            return Infinity
+        hitSphere = true
+        return s - Math.sqrt(discr)
+    normal: (poi) ->
+        normalize(sub(poi, @center))
+
+class Plane extends Shape
+    constructor: (@n, @d) -> #n is the normal vector
+        @n = normalize(@n)
+        super
+        this
+    intersect: (g, d) ->
+        #@d is referring to the distance from the origin
+        # distance to the point of intersection on the plane
+        t = (@d - dot(g, @n)) / dot(d, @n)
+        console.log("plane", g, d, @n, @d, t) if debug
+        t
+    normal: (poi) ->
+        @n
+
+
+
+
+light = [100, 100, -200]
+shapes = []
+
+#shapes.push new Plane([0, 1, 0], -1.3).name("Plane").color([1, 1, 0])
+shapes.push new Sphere([0, 0.5, 10], 1).name("Sphere 1").color([0.5, 0, 0]).phong([0.5, 0.5, 0.5], 10)
+#shapes.push new Sphere [1, -1, 5], 1
+
+# g is the origin of the ray (can be the poi or the eye)
+# d is the direction
+findNearestObject = (g, d) ->
+    near = t: Infinity
+    for shape in shapes
+        # t is the distance to shape
+        t = shape.intersect(g, d)
+        #console.log t, eye, dir
+        if t > 1e-7 && t < near.t
+            near.t = t
+            near.shape = shape
+            console.log("hit object", (near.shape || {name: "none"}).name, near.t, g, d) if debug && near.shape
+    near
+
+ray = (g, d) ->
+    near = findNearestObject(g, d)
+    if near.t < Infinity
+        # poi = g + near.t * d
+        td = mul(near.t, d)
+        poi = add(g, td)
+        #computes the normal vector for the closest shape given a point of intersection
+        n = near.shape.normal(poi)
+
+        #Shading Calculation
+        #computes the vector from the point of intersection to the light
+        # we normalize the light because we want to think of the light infinitely back
+        l = normalize(sub(light, poi))
+        shadow = findNearestObject(poi, l)
+        color = [0, 0, 0]
+        bright = 0
+        pbright = 0 #Phong Brightness
+        if shadow.t == Infinity
+            # dot product gives us the brightness
+            bright = dot(l, n)
+            bright = 0 if bright < 0
+            color = mul(bright, near.shape.dcolor)
+            # Reflection Vector
+            if near.shape.pexp
+                #direction that the ray would reflect off the object
+                #(poi - g) - [2 * (poi - g) * n] * n
+                r = normalize(sub(td, mul(2 * dot(td, n), n)))
+                pbright = dot(l, r) ** near.shape.pexp
+                color = add(color, mul(pbright, near.shape.pcolor))
+            console.log("shadow", d, near, l, r, pbright) if debug
+        # if we hit something with a ray then we return a color
+        #console.log(near.shape, near.shape.dcolor)
+        return color
+    return [0, 0, 1]
+
+
+
+# What color is pixel x,y?
+pixel = (x, y) -> 
+    eye = [0, 0, 0]
+    dir = normalize([x, y, 3]) #controls field of view
+    #scale(255, dir)
+    ray(eye, dir)
+   
+r = 2
+incr = 0.025
+w = 200 # w is the resolution
+n = 10 # n is the number of rays shot through each pixel
+
+debug = false
+#debug = true
+if debug
+    console.log pixel 0, 0
+else
+    for v in [-w...w]
+        tr = "<tr>"
+        for u in [-w...w]
+            accum = [0, 0, 0]  #The initial value of the accumulator before averaging all the rays
+            for k in [0...n]
+                for j in [0...n]
+                    randX = (Math.random() * 2) - 1
+                    randY = (Math.random() * 2) - 1
+                    color = pixel((u + k / n + randX / 2 / n) / w, -(v + j / n  + randY / 2 / n) / w)
+                    accum = add(accum, color)
+            averageColor = mul(1.0 / n**2, accum)
+            tr += '<td style = "background:rgb('+Math.floor(averageColor[0] * 255) + ',' + Math.floor(averageColor[1] * 255) + ',' + Math.floor(averageColor[2] * 255) + ')">' + '</td>'
+        tr += "</tr>"
+        jQuery('table').append(tr)
+
+
+
+</script>
+
+<!-- Coffeescript compiling link -->
+
+<script src="https://cdn.rawgit.com/jashkenas/coffeescript/1.11.1/extras/coffee-script.js"></script>
+
+</html>

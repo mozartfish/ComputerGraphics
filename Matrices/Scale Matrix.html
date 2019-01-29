@@ -1,0 +1,48 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+<script>
+    function identityMatrix()
+    {
+        var matrix = [];
+        
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i = 0; i < 4; i ++)
+            {
+                matrix[j][i] = 0;
+                if (i == j) matrix[j][i] = 1;
+            }
+        }
+        return matrix;
+    }
+    
+    function scaleMatrix(Sx, Sy, Sz)
+    {
+        var m = identityMatrix();
+        
+        m[0][0] = Sx;
+        m[1][1] = Sy;
+        m[2][2] = Sz;
+        
+        return m;
+        
+    }
+    
+    function mPrint(description, a)
+    {
+        console.log(description);
+        for (var j = 0; j < 4; j++)
+        {
+            console.log(a[j][0], a[j][1], a[j][2], a[j][3]);
+        }
+    }
+    
+    var n = scaleMatrix(3, 3, 3);
+    mPrint("Scaled by 3 matrix", n);
+    mPrint("identity matrix", identityMatrix());
+    
+    
+   
+    
+</script>

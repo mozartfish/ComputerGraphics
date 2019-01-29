@@ -1,0 +1,163 @@
+<script>
+    Math.radians = function(degrees)
+    {
+        return degrees * Math.PI / 180;
+    }
+    
+    Math.degrees = function (radians)
+    {
+        return radians * 180 / Math. PI;
+    }
+    
+    function rotationAroundXaxis(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[1][1] = Math.degrees(rcos);
+        m[1][2] = Math.degrees(-rsin);
+        m[2][1] = Math.degrees(rsin);
+        m[2][2] = Math.degrees(rcos);
+        
+        return m;        
+    }
+    
+    function rotationAroundYaxis(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[0][0] = Math.degrees(rcos);
+        m[0][2] = Math.degrees(rsin);
+        m[2][0] = Math.degrees(-rsin);
+        m[2][2] = Math.degrees(rcos);
+        
+        return m;            
+    }
+    
+    function rotationAroundZaxis(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[0][0] = Math.degrees(rcos);
+        m[0][1] = Math.degrees(-rsin);
+        m[1][0] = Math.degrees(rsin);
+        m[1][1] = Math.degrees(rcos);
+        
+        return m;        
+    }
+    
+    
+    function rotationAroundZAxisMatrix(matrix, vector)
+    {
+        var n = rotationAroundZAxisDegreeMatrix(degrees);
+        var matrix = [];
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i =0; i < 4; i++)
+            {
+                matrix[j][i] = 0;
+                for (var k = 0; k < 4; k++)
+                {
+                    matrix[j][i] += matrix[j][k] * vector[k][i]; 
+                }
+            }
+        }
+        return matrix;
+    }
+    
+    function rotationAroundXAxisMatrix(matrix, vector)
+    {
+        var n = rotationAroundXAxisDegreeMatrix(degrees);
+        var matrix = [];
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i =0; i < 4; i++)
+            {
+                matrix[j][i] = 0;
+                for (var k = 0; k < 4; k++)
+                {
+                    matrix[j][i] += matrix[j][k] * vector[k][i]; 
+                }
+            }
+        }
+        return matrix;
+    }
+    
+    function rotationAroundYAxisMatrix(matrix, vector)
+    {
+        var n = rotationAroundYAxisDegreeMatrix(degrees);
+        var matrix = [];
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i =0; i < 4; i++)
+            {
+                matrix[j][i] = 0;
+                for (var k = 0; k < 4; k++)
+                {
+                    matrix[j][i] += matrix[j][k] * vector[k][i]; 
+                }
+            }
+        }
+        return matrix;
+    }
+
+
+function mxv(rotation, vector)
+{
+    var vector = [];
+    for (var j = 0; j < 4; j++)
+    {
+        vector[j] = [];
+        for (var i = 0; i < 4; i++)
+        {
+            vector[i][j] = 0;
+            for (var k = 0; k < 4; k++)
+            {
+                vector[j][i] += rotation[j][k] * vector[k][i];
+            }
+        }
+    }
+    
+    return vector;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

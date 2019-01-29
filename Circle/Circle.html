@@ -1,0 +1,36 @@
+<html>
+    <body>
+        <table cellspacing="0" cellpadding="1">
+            
+        </table>
+    </body>
+</html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    var r = 100;
+   for (var j = -r; j < r; j++)
+   {
+       var tableRow = "<tr>";
+       for (var i = -r; i < r; i++)
+       {
+           var color = disk(j,i);
+           tableRow = tableRow + '<td style = "background:rgb('+color[0] + ',' + color[1] + ',' + color[2] + ')"></td>';
+       }
+       tableRow = tableRow + "</tr>";
+       jQuery('table').append(tableRow);
+   }
+   
+   function disk(i,j)
+   {      
+       if (i * i + j * j <= r * r)
+       {
+           return [255,0,0];
+       }
+       else 
+       {
+           return [0,0,225];
+       }
+   }
+</script>

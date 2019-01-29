@@ -1,0 +1,196 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+// Written by Pranav Rajan Spring 2016
+<script>
+    function f(x)
+    {
+        return Math.floor(x * 10000) / 10000;
+    }
+    
+    function identityMatrix()
+    {
+        var matrix = [];
+        
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i = 0; i < 4; i ++)
+            {
+                matrix[j][i] = 0;
+                if (i == j) matrix[j][i] = 1;
+            }
+        }
+        return matrix;
+    }
+    
+    function scaleMatrix(Sx, Sy, Sz)
+    {
+        var m = identityMatrix();
+        
+        m[0][0] = Sx;
+        m[1][1] = Sy;
+        m[2][2] = Sz;
+        
+        return m;
+        
+    }
+    
+    function translationMatrix(tx, ty, tz)
+    {
+        var m = identityMatrix();
+        
+        m[0][3] = tx;
+        m[1][3] = ty;
+        m[2][3] = tz;
+        
+        return m;
+    }
+    
+    Math.radians = function(degrees)
+    {
+        return degrees * Math.PI / 180;
+    }
+    
+    function rotX(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[1][1] = rcos;
+        m[1][2] = -rsin;
+        m[2][1] = rsin;
+        m[2][2] = rcos;
+        
+        return m;        
+    }
+    
+    function rotY(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[0][0] = rcos;
+        m[0][2] = rsin;
+        m[2][0] = -rsin;
+        m[2][2] = rcos;
+        
+        return m;            
+    }
+    
+    function rotZ(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[0][0] = rcos;
+        m[0][1] = -rsin;
+        m[1][0] = rsin;
+        m[1][1] = rcos;
+        
+        return m;        
+    }
+    
+    function mxv(m, v)
+    {
+        var vector = [];
+        for (var j = 0; j < 4; j++) // the row of the matrix
+        {
+            vector[j] = 0;
+            for (var i = 0; i < 4; i++) // the column of the matrix and the row of the vector
+            {               
+                    vector[j] += m[j][i] * v[i];                
+            }
+        }
+    
+        return vector;
+    
+    } 
+
+    function mxm(a, b)
+    {
+        var matrix = [];
+        for (var j = 0; j < 4; j++) // this picks the row which is an array
+        {
+            matrix[j] = []; // This creates the next row without any individual elements
+            for (var i = 0; i < 4; i++) // sets an element from that row
+            {
+                matrix[j][i] = 0; // This refers to the row and empty array created on line 9 and
+                for (var k = 0; k < 4; k++)
+                {
+                    matrix[j][i] += a[j][k] * b[k][i];
+                }
+            }
+        }
+        return matrix;
+
+    }
+        
+    function mPrint(description, a)
+    {
+        console.log(description);
+        for (var j = 0; j < 4; j++)
+        {
+            console.log(f(a[j][0]), f(a[j][1]), f(a[j][2]), f(a[j][3]));
+        }
+    }
+    
+    function vPrint(description, v)
+    {
+        console.log(description, f(v[0]), f(v[1]), f(v[2]), f(v[3]));
+    }
+
+    function mxvPrint(m, v)
+    {
+        mPrint("m", m);
+        vPrint("v", v);
+        vPrint("mxv", mxv(m, v));
+    }
+   
+   
+   /* mxvPrint(identityMatrix(), [1, 0, 0, 1]);
+    mxvPrint(rotZ(90), [1, 0, 0, 1]);
+    mxvPrint(rotZ(90), [0, 1, 0, 1]);
+    mxvPrint(rotZ(90), [0, 0, 1, 1]);
+    mxvPrint(rotX(90), [1, 0, 0, 1]);
+    mxvPrint(rotX(90), [0, 1, 0, 1]);
+    mxvPrint(rotX(90), [0, 0, 1, 1]);
+    mxvPrint(rotY(90), [1, 0, 0, 1]);
+    mxvPrint(rotY(90), [0, 1, 0, 1]);
+    mxvPrint(rotY(90), [0, 0, 1, 1]);
+    */
+    
+   
+
+    
+
+   var n = translationMatrix(3,3,3);
+   
+   console.log(n);
+   
+   
+   
+   
+   
+   
+   
+    
+    /*var n = scaleMatrix(3, 3, 3);
+    mPrint("Scaled by 3 matrix", n);
+    mPrint("identity matrix", identityMatrix());
+    mPrint("scale matrix squared", mxm(n, n));
+    */
+    
+    /* var p = scaleMatrix(5, 10, 4);
+    mPrint("Scaled in all directions matrix", p);
+    mPrint("p times n", mxm(p, n));
+    mPrint("n times p", mxm(n, p));
+    */
+   
+    
+</script>

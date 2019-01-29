@@ -1,0 +1,322 @@
+<body>
+<div style="border:thin solid black"></div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+
+<script>
+    
+    var ctm;
+    var ctmstack = [];
+    
+    function push()
+    {
+        ctmstack.push([
+            [ctm[0][0], ctm[0][1], ctm[0][2], ctm[0][3]], 
+            [ctm[1][0], ctm[1][1], ctm[1][2], ctm[1][3]], 
+            [ctm[2][0], ctm[2][1], ctm[2][2], ctm[2][3]], 
+            [ctm[3][0], ctm[3][1], ctm[3][2], ctm[3][3]]
+        ])
+    }
+    
+    function pop()
+    {
+        ctm = ctmstack.pop()
+    }
+        
+    function f(x)
+    {
+        return Math.floor(x * 10000) / 10000;
+    }
+    
+    function identityMatrix()
+    {
+        var matrix = [];
+        
+        for (var j = 0; j < 4; j++)
+        {
+            matrix[j] = [];
+            for (var i = 0; i < 4; i ++)
+            {
+                matrix[j][i] = 0;
+                if (i == j) matrix[j][i] = 1;
+            }
+        }
+        return matrix;
+    }
+    
+    function ident()
+    {
+        ctm = identityMatrix();
+    }
+    
+    function scaleMatrix(Sx, Sy, Sz)
+    {
+        var m = identityMatrix();
+        
+        m[0][0] = Sx;
+        m[1][1] = Sy;
+        m[2][2] = Sz;
+        
+        return m;
+        
+    }
+    
+    function scale(Sx, Sy, Sz)
+    {
+        
+        ctm = mxm(ctm, scaleMatrix(Sx, Sy, Sz));
+    }
+    
+    function translationMatrix(tx, ty, tz)
+    {
+        var m = identityMatrix();
+        
+        m[0][3] = tx;
+        m[1][3] = ty;
+        m[2][3] = tz;
+        
+        return m;
+    }
+    
+    function tran(tx, ty, tz)
+    {
+        ctm = mxm(ctm, translationMatrix(tx, ty, tz));
+    }
+    
+    Math.radians = function(degrees)
+    {
+        return degrees * Math.PI / 180;
+    }
+    
+    function rotateX(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[1][1] = rcos;
+        m[1][2] = -rsin;
+        m[2][1] = rsin;
+        m[2][2] = rcos;
+        
+        return m;        
+    }
+
+    function rotX(degrees)
+    {
+        ctm = mxm(ctm, rotateX(degrees));
+    }
+    
+    function rotateY(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[0][0] = rcos;
+        m[0][2] = rsin;
+        m[2][0] = -rsin;
+        m[2][2] = rcos;
+        
+        return m;            
+    }
+
+    function rotY(degrees)
+    {
+        ctm = mxm(ctm, rotateY(degrees));
+    }
+    
+    function rotateZ(degrees)
+    {
+        var rcos = Math.cos(Math.radians(degrees));
+        var rsin = Math.sin(Math.radians(degrees));
+        
+        var m = identityMatrix();
+        
+        m[0][0] = rcos;
+        m[0][1] = -rsin;
+        m[1][0] = rsin;
+        m[1][1] = rcos;
+        
+        return m;        
+    }
+
+    function rotz(degrees)
+    {
+        ctm = mxm(ctm, rotateZ(degrees));
+    }
+
+    
+    function mxv(m, v)
+    {
+       
+        var vector = [];
+        for (var j = 0; j < 4; j++) // the row of the matrix
+        {
+            vector[j] = 0;
+            for (var i = 0; i < 4; i++) // the column of the matrix and the row of the vector
+            {               
+                    vector[j] += m[j][i] * v[i];                
+            }
+        }
+    
+        return vector;
+    
+    } 
+
+    function mxm(a, b)
+    {
+        var matrix = [];
+        for (var j = 0; j < 4; j++) // this picks the row which is an array
+        {
+            matrix[j] = []; // This creates the next row without any individual elements
+            for (var i = 0; i < 4; i++) // sets an element from that row
+            {
+                matrix[j][i] = 0; // This refers to the row and empty array created on line 9 and
+                for (var k = 0; k < 4; k++)
+                {
+                    matrix[j][i] += a[j][k] * b[k][i];
+                }
+            }
+        }
+        return matrix;
+
+    }
+        
+    function mPrint(description, a)
+    {
+        console.log(description);
+        for (var j = 0; j < 4; j++)
+        {
+            console.log(f(a[j][0]), f(a[j][1]), f(a[j][2]), f(a[j][3]));
+        }
+    }
+    
+    function vPrint(description, v)
+    {
+        console.log(description, f(v[0]), f(v[1]), f(v[2]), f(v[3]));
+    }
+
+    function mxvPrint(m, v)
+    {
+        mPrint("m", m);
+        vPrint("v", v);
+        vPrint("mxv", mxv(m, v));
+    }
+    
+    var svg;
+    function svgInit(w, h)
+    {
+        svg = '<svg width="' + w + '" height="' + h + '">';
+        ident();
+        scale(w / 2, h / 2, 1);
+        tran(1, 1, 0);
+        scale(1, -1, 1);
+        tran(0, 0, 3);
+        mPrint("ctm", ctm);
+        
+         
+    }
+    
+    
+    function circle()
+    {
+        svg += '<circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />';
+    }
+    
+    function line(x1, y1, z1, x2, y2, z2)
+    {
+        
+        var p1 = mxv(ctm, [x1, y1, z1, 1])
+        var p2 = mxv(ctm, [x2, y2, z2, 1])
+        
+        
+      
+        svg += '<line x1="' + p1[0] / p1[2] + '" y1="' + p1[1] / p1[2] + '" x2="' + p2[0] / p2[2] + '" y2="' + p2[1] / p2[2] + '"  style="stroke:rgb(255,0,0);stroke-width:2" />';
+    }
+    function svgDone()
+    {
+        svg += '</svg>';
+        $('div').html(svg);
+    }
+   
+   function cube()
+   {
+       
+       line(-1,1,1, 1,1,1);
+       line(1,1,1, 1,1,-1);
+       line(1,1,-1, -1,1,-1);
+       line(-1,1,-1, -1,1,1);
+       line(-1,-1,-1, 1,-1,-1);
+       line(1,-1,-1, 1,-1,1);
+       line(1,-1,1, -1,-1,1);
+       line(-1,-1,1, -1,-1,-1);
+       line(-1,1,-1, -1,-1,-1);
+       line(1,1,-1, 1,-1,-1);
+       line(1,1,1, 1,-1,1);
+       line(-1,1,1, -1,-1,1);
+       
+       
+   }
+
+   function axis()
+   {
+       line(0, 0, 0,  1, 0, 0)
+       line(0, 0, 0,  0, 1, 0)
+       line(0, 0, 0,  0, 0, -1)
+   }
+
+   function drawAxis()
+   {
+       svgInit(1000, 1000);
+       push();
+       scale(0.5, 0.5, 0.5);
+       mPrint("ctm", ctm);
+       axis();
+       pop();
+       svgDone();
+   }
+
+   drawAxis();
+
+   var degree = 0
+   /*function rotatedCube()
+   {
+       
+       svgInit(1000, 1000);
+       //rotX(30);
+       push();
+       rotY(degree);
+       degree += 10;       
+       scale(0.5, 0.5, 0.5);
+       mPrint("ctm", ctm);
+       cube();
+       pop();
+       svgDone();
+   }
+   rotatedCube();
+   */
+   
+   function draw()
+   {
+       svgInit(1000, 1000);
+       push();
+       rotY(degree);
+       degree += 0;
+       scale(0.5, 0.5, 0.5);
+       mPrint("ctm", ctm);
+       cube();
+       axis();
+       pop();
+       svgDone();
+   }
+
+   draw();
+
+ console.log("Hello World")
+//setInterval(rotatedCube, 200);
+        
+</script>

@@ -1,0 +1,24 @@
+<html>
+    <body>
+        <table></table>
+    </body>
+</html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    
+    for (var j = 0; j < 3; j ++)
+    {
+        var nameArray = ["bob","joel","robert","richard","pranav","andrew","rahul","calcaterra","kennedy"];
+        var tableRow = "<tr>";
+        for (i = 0; i < 3; i++)
+        {
+            tableRow = tableRow + "<td>nameArray[i]></td>";
+        }
+         tableRow = tableRow + "</tr>";
+         jQuery('table').append(tableRow)
+    }
+   
+    
+</script>
